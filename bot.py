@@ -11,7 +11,7 @@ import datetime
 # creator_email = "ksdeshappriya.official@gmail.com"
 
 # Initialize the Telegram bot client
-app = Client(f"{os.getenv("BOT_USERNAME")}", bot_token=os.getenv("BOT_TOKEN"), api_id=os.getenv("API_ID"), api_hash=os.getenv("API_HASH"))
+app = Client("Dermarecords_bot", bot_token="7757535231:AAFfSqNuDCL5VUu-otycb1o-IA6y8ZgmmsU", api_id="23594687", api_hash="08f8c5b947a21154985f47e91d84a470")
 
 user_data = {}  # Temporary storage for user sessions
 
