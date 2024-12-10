@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responses</title>
+    <link rel="icon" type="image/x-icon" href="https://cdn-icons-png.flaticon.com/512/187/187474.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f6f9;
+        }
+        .image-preview {
+            height: 150px;
+            object-fit: cover; /* Ensures the image covers the area */
+        }
+        .loader {
+            border: 4px solid #f3f3f3; /* Light grey */
+            border-top: 4px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .gdparent a{
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container my-5">
+        <h1 class="text-center mb-5">Responses for Category: {{ category }}</h1>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="gdparent"><a href="https://drive.google.com/drive/u/0/folders/{{ responses.0.parentFolder }}" class="text-decoration-none">|> to Parent Google Drive Folder</a></div>
+                <div class="list-group">
+                    {% for response in responses %}
+                    <div class="list-group-item p-4 mb-3 shadow-sm rounded">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="fw-bold">User ID: {{ response.user_id }}</span>
+                            <span class="fw-bold">Unique ID: {{ response.unique_id }}</span>
+                        </div>
+                        <h5 class="mb-3">Answers:</h5>
+                        <ul class="list-group mb-3">
+                            {% for q_id, answer in response.answers.items() %}
+                            <li class="list-group-item">
+                                <strong>Q{{ q_id }}:</strong> {{ answer }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        <h5 class="mb-3">Images:</h5>
+                        <ul class="list-group">
+                            {% for img in response.images %}
+                            <li class="list-group-item">
+                                <div id="image-container-{{ response.unique_id }}" class="text-decoration-none">
+                                    <i class="fas fa-image me-2"></i>
+                                    <span class="loader" id="loader-{{ response.unique_id }}"></span>
+                                </div>
+                                <script>
+                                    // Assuming img contains the base64 string
+                                    var url = "https://api.allorigins.win/get?url=https://drive.usercontent.google.com/download?id=" + encodeURIComponent('{{ img }}');
+                                    var imgBase64;
+
+                                    // Fetch JSON data
+                                    fetch(url)
+                                        .then(response => {
+                                            if (!response.ok) {
+                                                throw new Error('Network response was not ok');
+                                            }
+                                            return response.json(); // Return the JSON data
+                                        })
+                                        .then(data => {
+                                            console.log(data);
+                                            imgBase64 = data.contents;
+
+                                            // Create an img element only after imgBase64 is set
+                                            const imgElement = document.createElement('img');
+                                            imgElement.src = imgBase64; // Set the src to the base64 string
+                                            imgElement.classList.add('image-preview'); // Add responsive class
+
+                                            // Hide the loader and append the img element to the container
+                                            document.getElementById('loader-{{ response.unique_id }}').style.display = 'none';
+                                            document.getElementById('image-container-{{ response.unique_id }}').appendChild(imgElement);
+                                        })
+                                        .catch(error => {
+                                            console.error('Error fetching image:', error);
+                                            // Hide the loader if there's an error
+                                            document.getElementById('loader-{{ response.unique_id }}').style.display = 'none';
+                                        });
+                                </script>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        <div class="gdcategory"><a href="https://drive.google.com/drive/u/0/folders/{{ response.folder }}" class="text-decoration-none">|> to Category Google Drive Folder</a></div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a href="/" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
