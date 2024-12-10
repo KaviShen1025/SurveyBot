@@ -8,7 +8,7 @@ def initialize_drive():
     from google.oauth2.service_account import Credentials
     SCOPES = ['https://www.googleapis.com/auth/drive']
     creds = Credentials.from_service_account_file(
-        os.getenv("GOOGLE_CREDENTIALS_PATH"), scopes=SCOPES)
+        "credentials.json", scopes=SCOPES)
     return build("drive", "v3", credentials=creds)
 
 drive_service = initialize_drive()
